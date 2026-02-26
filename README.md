@@ -51,6 +51,10 @@ npm run dev
 
 **Example**: Input `Hello, World!` produces ` 1!1,1H1W1d1e1l3o2r1/SGVsbG8sIFdvcmxkIQ==`
 
+## Documentation
+
+For detailed architecture, API reference, data flow diagrams, infrastructure setup, and deployment guides, see the [Technical Reference](docs/TECHNICAL_REFERENCE.md).
+
 ## Running Tests
 
 ### Backend
