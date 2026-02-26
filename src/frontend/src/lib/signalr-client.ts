@@ -1,12 +1,19 @@
 import * as signalR from '@microsoft/signalr';
 
 let connection: signalR.HubConnection | null = null;
+let currentToken: string | null = null;
 
 export function getConnection(token: string): signalR.HubConnection {
-  if (connection) {
+  if (connection && currentToken === token) {
     return connection;
   }
 
+  if (connection) {
+    connection.stop();
+    connection = null;
+  }
+
+  currentToken = token;
   connection = new signalR.HubConnectionBuilder()
     .withUrl('/hub/job-progress', {
       accessTokenFactory: () => token,

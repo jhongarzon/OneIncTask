@@ -26,7 +26,7 @@ const initialState: JobProgressState = {
   error: null,
 };
 
-export function useJobProgress(token: string | null) {
+export function useJobProgress(token: string | null, onAuthError?: () => void) {
   const [state, setState] = useState<JobProgressState>(initialState);
   const connectionRef = useRef<HubConnection | null>(null);
 
@@ -101,7 +101,14 @@ export function useJobProgress(token: string | null) {
     });
 
     if (conn.state === HubConnectionState.Disconnected) {
-      conn.start().catch(console.error);
+      conn.start().catch((err) => {
+        if (err?.statusCode === 401 || err?.message?.includes('401')) {
+          stopConnection();
+          onAuthError?.();
+        } else {
+          console.error(err);
+        }
+      });
     }
 
     return () => {

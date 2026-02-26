@@ -11,7 +11,17 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
+let onUnauthorized: (() => void) | null = null;
+
+export function setOnUnauthorized(callback: () => void) {
+  onUnauthorized = callback;
+}
+
 async function handleResponse<T>(response: Response): Promise<T> {
+  if (response.status === 401 && onUnauthorized) {
+    onUnauthorized();
+    throw new Error('Session expired. Refreshing token...');
+  }
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: response.statusText }));
     throw new Error(error.message || error.error?.message || response.statusText);

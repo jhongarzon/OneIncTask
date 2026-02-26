@@ -6,8 +6,8 @@ import { ResultDisplay } from './ResultDisplay';
 import { ProgressBar } from './ProgressBar';
 
 export function ProcessingPage() {
-  const { token } = useAuth();
-  const progress = useJobProgress(token);
+  const { token, refreshToken } = useAuth();
+  const progress = useJobProgress(token, refreshToken);
 
   const startJobMutation = useStartJob((jobId) => {
     progress.setJobId(jobId);

@@ -1,13 +1,14 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { getAuthToken } from '@/lib/api-client';
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
+import { getAuthToken, setOnUnauthorized } from '@/lib/api-client';
 
 interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   error: string | null;
+  refreshToken: () => void;
 }
 
-const AuthContext = createContext<AuthContextType>({ token: null, isLoading: true, error: null });
+const AuthContext = createContext<AuthContextType>({ token: null, isLoading: true, error: null, refreshToken: () => {} });
 
 export function useAuth() {
   return useContext(AuthContext);
@@ -18,9 +19,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(!token);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (token) return;
-
+  const fetchToken = useCallback(() => {
+    setIsLoading(true);
+    setError(null);
     getAuthToken()
       .then((t) => {
         localStorage.setItem('jwt_token', t);
@@ -32,10 +33,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [token]);
+  }, []);
+
+  const refreshToken = useCallback(() => {
+    localStorage.removeItem('jwt_token');
+    setToken(null);
+  }, []);
+
+  useEffect(() => {
+    setOnUnauthorized(refreshToken);
+  }, [refreshToken]);
+
+  useEffect(() => {
+    if (!token) {
+      fetchToken();
+    }
+  }, [token, fetchToken]);
 
   return (
-    <AuthContext.Provider value={{ token, isLoading, error }}>
+    <AuthContext.Provider value={{ token, isLoading, error, refreshToken }}>
       {children}
     </AuthContext.Provider>
   );
