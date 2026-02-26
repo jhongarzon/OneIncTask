@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/OneIncTask.Api/OneIncTask.Api.csproj" />
+    <Project Path="src/OneIncTask.Application/OneIncTask.Application.csproj" />
+    <Project Path="src/OneIncTask.Domain/OneIncTask.Domain.csproj" />
+    <Project Path="src/OneIncTask.Infrastructure/OneIncTask.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OneIncTask.UnitTests/OneIncTask.UnitTests.csproj" />
+  </Folder>
+</Solution>
